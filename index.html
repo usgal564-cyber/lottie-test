@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome Back</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@200;400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --bg: #0a0e17;
+      --bg-card: #111827;
+      --fg: #e8ecf4;
+      --muted: #6b7a94;
+      --accent: #00e5a0;
+      --accent-dim: rgba(0, 229, 160, 0.12);
+      --border: #1e293b;
+      --input-bg: #0d1321;
+      --error: #ff4d6a;
+      --glow: rgba(0, 229, 160, 0.25);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Бүх хуудасны арын gradient blob */
+    .bg-blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .blob-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #00e5a0 0%, transparent 70%);
+      top: -150px; left: -100px;
+      animation: blobFloat1 12s ease-in-out infinite;
+    }
+    .blob-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #0077ff 0%, transparent 70%);
+      bottom: -100px; right: -50px;
+      animation: blobFloat2 15s ease-in-out infinite;
+    }
+    .blob-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, #00e5a0 0%, transparent 70%);
+      top: 50%; right: 30%;
+      opacity: 0.15;
+      animation: blobFloat3 10s ease-in-out infinite;
+    }
+
+    @keyframes blobFloat1 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(60px, 40px) scale(1.15); }
+    }
+    @keyframes blobFloat2 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-50px, -30px) scale(1.1); }
+    }
+    @keyframes blobFloat3 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(30px, -50px) scale(0.9); }
+    }
+
+    /* Lottie хэсгийн ард shimmer эффект */
+    .lottie-panel {
+      position: relative;
+      overflow: hidden;
+    }
+    .lottie-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        transparent 30%,
+        rgba(0, 229, 160, 0.04) 50%,
+        transparent 70%
+      );
+      background-size: 200% 200%;
+      animation: shimmer 6s ease-in-out infinite;
+      z-index: 1;
+      pointer-events: none;
+    }
+    @keyframes shimmer {
+      0%, 100% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+    }
+
+    /* Lottie контейнер */
+    #lottie-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #lottie-container svg {
+      max-width: 380px !important;
+      max-height: 380px !important;
+    }
+
+    /* Формын input */
+    .form-input {
+      width: 100%;
+      padding: 14px 16px 14px 48px;
+      background: var(--input-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      color: var(--fg);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+    }
+    .form-input::placeholder {
+      color: var(--muted);
+      font-weight: 300;
+    }
+    .form-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-dim), 0 0 20px var(--glow);
+      background: rgba(13, 19, 33, 0.8);
+    }
+    .form-input.error {
+      border-color: var(--error);
+      box-shadow: 0 0 0 3px rgba(255, 77, 106, 0.12);
+    }
+
+    /* Input икон */
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 16px;
+      transition: color 0.3s;
+      pointer-events: none;
+    }
+    .input-wrap:focus-within .input-icon {
+      color: var(--accent);
+    }
+
+    /* Toggle password харах */
+    .toggle-pw {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 15px;
+      padding: 4px;
+      transition: color 0.2s;
+    }
+    .toggle-pw:hover { color: var(--accent); }
+
+    /* Логин按钮 */
+    .btn-login {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #00e5a0 0%, #00b87a 100%);
+      color: #0a0e17;
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0, 229, 160, 0.35);
+    }
+    .btn-login:active {
+      transform: translateY(0) scale(0.98);
+    }
+    .btn-login::after {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent 40%,
+        rgba(255,255,255,0.15) 50%,
+        transparent 60%
+      );
+      transform: translateX(-100%);
+      transition: none;
+    }
+    .btn-login:hover::after {
+      animation: btnSheen 0.6s ease forwards;
+    }
+    @keyframes btnSheen {
+      to { transform: translateX(100%); }
+    }
+
+    /* Loading спиннер */
+    .btn-login .spinner {
+      display: none;
+      width: 20px; height: 20px;
+      border: 2.5px solid rgba(10,14,23,0.3);
+      border-top-color: #0a0e17;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto;
+    }
+    .btn-login.loading .btn-text { display: none; }
+    .btn-login.loading .spinner { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Error message */
+    .field-error {
+      font-size: 12px;
+      color: var(--error);
+      margin-top: 6px;
+      padding-left: 4px;
+      min-height: 18px;
+      transition: opacity 0.2s;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 9999;
+      transform: translateX(120%);
+      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      backdrop-filter: blur(12px);
+    }
+    .toast.show { transform: translateX(0); }
+    .toast.success {
+      background: rgba(0, 229, 160, 0.15);
+      border: 1px solid rgba(0, 229, 160, 0.3);
+      color: #00e5a0;
+    }
+    .toast.error {
+      background: rgba(255, 77, 106, 0.15);
+      border: 1px solid rgba(255, 77, 106, 0.3);
+      color: #ff4d6a;
+    }
+
+    /* Floating particles */
+    .particle {
+      position: fixed;
+      width: 3px; height: 3px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 0;
+    }
+
+    /* Sign Up link */
+    .signup-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      position: relative;
+      transition: color 0.2s;
+    }
+    .signup-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 0; height: 1.5px;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+    .signup-link:hover::after { width: 100%; }
+
+    /* Checkbox custom */
+    .custom-check {
+      appearance: none;
+      width: 18px; height: 18px;
+      border: 1.5px solid var(--border);
+      border-radius: 5px;
+      background: var(--input-bg);
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .custom-check:checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .custom-check:checked::after {
+      content: '';
+      position: absolute;
+      left: 5px; top: 2px;
+      width: 5px; height: 9px;
+      border: solid #0a0e17;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    /* Зураасан deco элементүүд */
+    .deco-ring {
+      position: absolute;
+      border: 1px solid rgba(0, 229, 160, 0.08);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr !important;
+        grid-template-rows: auto 1fr;
+      }
+      .lottie-panel {
+        min-height: 220px !important;
+      }
+      #lottie-container svg {
+        max-width: 220px !important;
+        max-height: 220px !important;
+      }
+      .form-panel {
+        padding: 32px 24px !important;
+      }
+    }
+
+    /* Page enter animation */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-in {
+      animation: fadeSlideUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      opacity: 0;
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+    .delay-5 { animation-delay: 0.5s; }
+    .delay-6 { animation-delay: 0.6s; }
+
+    /* Social login buttons */
+    .social-btn {
+      flex: 1;
+      padding: 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--fg);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.25s;
+    }
+    .social-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Арын blob шингээнүүд -->
+  <div class="bg-blob blob-1"></div>
+  <div class="bg-blob blob-2"></div>
+  <div class="bg-blob blob-3"></div>
+
+  <!-- Floating particles -->
+  <div id="particles"></div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">
+    <i id="toast-icon"></i>
+    <span id="toast-msg"></span>
+  </div>
+
+  <!-- Үндсэн layout -->
+  <main class="relative z-10 min-h-screen flex items-center justify-center p-4 sm:p-8">
+    <div class="main-grid w-full max-w-[960px] grid grid-cols-[1fr_1fr] rounded-2xl overflow-hidden"
+         style="background: rgba(17, 24, 39, 0.65); backdrop-filter: blur(24px); border: 1px solid var(--border); box-shadow: 0 32px 80px rgba(0,0,0,0.5);">
+
+      <!-- ЗҮҮН: Lottie анимацион -->
+      <div class="lottie-panel relative flex flex-col items-center justify-center p-8 min-h-[560px]"
+           style="background: linear-gradient(160deg, rgba(0,229,160,0.04) 0%, transparent 60%);">
+        <!-- Deco ring -->
+        <div class="deco-ring" style="width:300px;height:300px;top:50%;left:50%;transform:translate(-50%,-50%);animation:blobFloat3 8s ease-in-out infinite;"></div>
+        <div class="deco-ring" style="width:200px;height:200px;top:50%;left:50%;transform:translate(-50%,-50%);animation:blobFloat1 6s ease-in-out infinite;"></div>
+
+        <div id="lottie-container" style="position:relative;z-index:2;"></div>
+
+        <p class="relative z-10 text-center mt-4 animate-in delay-3" style="color:var(--muted);font-size:13px;letter-spacing:0.3px;">
+          Аюулгүй, хурдан, хялбар нэвтрэлт
+        </p>
+      </div>
+
+      <!-- БАРУУН: Логин форм -->
+      <div class="form-panel flex flex-col justify-center px-10 py-12 sm:px-12">
+        <!-- Heading -->
+        <div class="mb-8 animate-in delay-1">
+          <h1 style="font-family:'Outfit',sans-serif;font-size:32px;font-weight:800;line-height:1.15;letter-spacing:-0.5px;">
+            Welcome Back
+          </h1>
+          <p class="mt-2" style="color:var(--muted);font-size:14px;font-weight:300;">
+            Тавтай морилно уу. Дахин нэвтрэхийн тулд мэдээллээ оруулна уу.
+          </p>
+        </div>
+
+        <!-- Form -->
+        <form id="loginForm" novalidate autocomplete="off">
+          <!-- Email -->
+          <div class="mb-1 animate-in delay-2">
+            <label class="block mb-2" style="font-size:13px;font-weight:500;color:var(--muted);letter-spacing:0.3px;text-transform:uppercase;">
+              Email
+            </label>
+            <div class="input-wrap relative">
+              <i class="input-icon fa-regular fa-envelope"></i>
+              <input type="email" id="email" class="form-input" placeholder="name@example.com" />
+            </div>
+            <div class="field-error" id="emailError"></div>
+          </div>
+
+          <!-- Password -->
+          <div class="mb-4 animate-in delay-3">
+            <label class="block mb-2" style="font-size:13px;font-weight:500;color:var(--muted);letter-spacing:0.3px;text-transform:uppercase;">
+              Password
+            </label>
+            <div class="input-wrap relative">
+              <i class="input-icon fa-solid fa-lock" style="font-size:14px;"></i>
+              <input type="password" id="password" class="form-input" placeholder="********" />
+              <button type="button" class="toggle-pw" id="togglePw" aria-label="Нууц үг харах">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+            <div class="field-error" id="pwError"></div>
+          </div>
+
+          <!-- Remember + Forgot -->
+          <div class="flex items-center justify-between mb-6 animate-in delay-4">
+            <label class="flex items-center gap-2 cursor-pointer" style="font-size:13px;color:var(--muted);">
+              <input type="checkbox" class="custom-check" id="remember" />
+              Намайг сана
+            </label>
+            <a href="#" onclick="showToast('Нууц үг сэргээх линк илгээгдлээ','success');return false;"
+               style="font-size:13px;color:var(--accent);text-decoration:none;font-weight:500;transition:opacity 0.2s;"
+               onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+              Нууц үг мартсан?
+            </a>
+          </div>
+
+          <!-- Login Button -->
+          <div class="animate-in delay-5">
+            <button type="submit" class="btn-login" id="loginBtn">
+              <span class="btn-text">LOGIN</span>
+              <div class="spinner"></div>
+            </button>
+          </div>
+        </form>
+
+        <!-- Divider -->
+        <div class="flex items-center gap-3 my-6 animate-in delay-5">
+          <div class="flex-1" style="height:1px;background:var(--border);"></div>
+          <span style="font-size:12px;color:var(--muted);white-space:nowrap;">эсвэл</span>
+          <div class="flex-1" style="height:1px;background:var(--border);"></div>
+        </div>
+
+        <!-- Social login -->
+        <div class="flex gap-3 mb-6 animate-in delay-5">
+          <button class="social-btn" onclick="showToast('Google-р нэвтрэх','success')">
+            <i class="fa-brands fa-google"></i> Google
+          </button>
+          <button class="social-btn" onclick="showToast('GitHub-р нэвтрэх','success')">
+            <i class="fa-brands fa-github"></i> GitHub
+          </button>
+        </div>
+
+        <!-- Sign Up -->
+        <p class="text-center animate-in delay-6" style="font-size:14px;color:var(--muted);">
+          Бүртгэл байхгүй юу?
+          <a href="#" class="signup-link" onclick="showToast('Бүртгэлийн хуудас руу шилжих','success');return false;">Sign Up</a>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // ===== Lottie анимацийн тохиргоо =====
+    // Олон нөөцөөс ажиллахыг оролдох
+    const lottieSources = [
+      // Developer / coding хийж байгаа анимацион
+      'https://assets2.lottiefiles.com/packages/lf20_jcikwtux.json',
+      // Хүн компьютерт ажиллаж байгаа
+      'https://assets10.lottiefiles.com/packages/lf20_xlmz9xwm.json',
+      // Tech / data анимацион
+      'https://assets9.lottiefiles.com/packages/lf20_ky24lsxa.json',
+      // Dashboard анимацион
+      'https://assets4.lottiefiles.com/packages/lf20_tutvdkg0.json',
+      // General coding
+      'https://assets3.lottiefiles.com/packages/lf20_UJNc2t.json'
+    ];
+
+    let lottieAnim = null;
+    let currentSourceIndex = 0;
+
+    function loadLottie(url) {
+      const container = document.getElementById('lottie-container');
+      // өмнөх анимацийг цэвэрлэх
+      container.innerHTML = '';
+      if (lottieAnim) {
+        lottieAnim.destroy();
+        lottieAnim = null;
+      }
+
+      lottieAnim = lottie.loadAnimation({
+        container: container,
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: url
+      });
+
+      lottieAnim.addEventListener('data_failed', function() {
+        // Энэ нөөц ажиллахгүй байна, дараагийн руу шилжих
+        currentSourceIndex++;
+        if (currentSourceIndex < lottieSources.length) {
+          loadLottie(lottieSources[currentSourceIndex]);
+        } else {
+          // Бүх нөөц амжилтгүй болно → fallback текст харуулах
+          container.innerHTML = `
+            <div style="text-align:center;">
+              <div style="font-size:80px;margin-bottom:16px;filter:drop-shadow(0 0 30px rgba(0,229,160,0.4));">
+                <i class="fa-solid fa-laptop-code" style="color:var(--accent);"></i>
+              </div>
+              <p style="color:var(--muted);font-size:14px;">Анимацион ачааллахад алдаа гарлаа</p>
+            </div>
+          `;
+        }
+      });
+
+      // Амжилттай ачаалласан үед subtle scale эффект
+      lottieAnim.addEventListener('data_ready', function() {
+        const svg = container.querySelector('svg');
+        if (svg) {
+          svg.style.transition = 'opacity 0.6s ease';
+          svg.style.opacity = '0';
+          requestAnimationFrame(() => {
+            svg.style.opacity = '1';
+          });
+        }
+      });
+    }
+
+    // Эхний Lottie анимацийг ачаалах
+    loadLottie(lottieSources[0]);
+
+
+    // ===== Нууц үг харах/нуух =====
+    const togglePw = document.getElementById('togglePw');
+    const pwInput = document.getElementById('password');
+
+    togglePw.addEventListener('click', () => {
+      const isPassword = pwInput.type === 'password';
+      pwInput.type = isPassword ? 'text' : 'password';
+      togglePw.innerHTML = isPassword
+        ? '<i class="fa-regular fa-eye-slash"></i>'
+        : '<i class="fa-regular fa-eye"></i>';
+    });
+
+
+    // ===== Формын validation =====
+    const form = document.getElementById('loginForm');
+    const emailInput = document.getElementById('email');
+    const emailError = document.getElementById('emailError');
+    const pwError = document.getElementById('pwError');
+    const loginBtn = document.getElementById('loginBtn');
+
+    // Real-time validation
+    emailInput.addEventListener('input', () => {
+      if (emailInput.classList.contains('error')) {
+        validateEmail(false);
+      }
+    });
+    pwInput.addEventListener('input', () => {
+      if (pwInput.classList.contains('error')) {
+        validatePassword(false);
+      }
+    });
+
+    function validateEmail(showError = true) {
+      const val = emailInput.value.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!val) {
+        if (showError) {
+          emailError.textContent = 'И-мэйл хаяг оруулна уу';
+          emailInput.classList.add('error');
+        }
+        return false;
+      }
+      if (!emailRegex.test(val)) {
+        if (showError) {
+          emailError.textContent = 'Зөв и-мэйл хаяг оруулна уу';
+          emailInput.classList.add('error');
+        }
+        return false;
+      }
+      emailError.textContent = '';
+      emailInput.classList.remove('error');
+      return true;
+    }
+
+    function validatePassword(showError = true) {
+      const val = pwInput.value;
+      if (!val) {
+        if (showError) {
+          pwError.textContent = 'Нууц үг оруулна уу';
+          pwInput.classList.add('error');
+        }
+        return false;
+      }
+      if (val.length < 6) {
+        if (showError) {
+          pwError.textContent = 'Нууц үг хамгийн багадаа 6 тэмдэгт байх';
+          pwInput.classList.add('error');
+        }
+        return false;
+      }
+      pwError.textContent = '';
+      pwInput.classList.remove('error');
+      return true;
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const emailOk = validateEmail();
+      const pwOk = validatePassword();
+
+      if (!emailOk || !pwOk) {
+        // Алдаатай field-д shake эффект
+        if (!emailOk) shakeField(emailInput);
+        if (!pwOk) shakeField(pwInput);
+        return;
+      }
+
+      // Loading төлөв
+      loginBtn.classList.add('loading');
+      loginBtn.disabled = true;
+
+      // Хиймэл delay (сервер рүү илгээх мэт)
+      setTimeout(() => {
+        loginBtn.classList.remove('loading');
+        loginBtn.disabled = false;
+
+        // Жишээ бүртгэл: demo@test.com / demo123
+        if (emailInput.value.trim() === 'demo@test.com' && pwInput.value === 'demo123') {
+          showToast('Амжилттай нэвтэрлээ!', 'success');
+        } else {
+          showToast('И-мэйл эсвэл нууц үг буруу байна', 'error');
+        }
+      }, 1800);
+    });
+
+    function shakeField(el) {
+      el.style.animation = 'none';
+      el.offsetHeight; // reflow
+      el.style.animation = 'shake 0.4s ease';
+      setTimeout(() => el.style.animation = '', 400);
+    }
+
+    // Shake keyframe нэмэх
+    const shakeStyle = document.createElement('style');
+    shakeStyle.textContent = `
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        20% { transform: translateX(-6px); }
+        40% { transform: translateX(6px); }
+        60% { transform: translateX(-4px); }
+        80% { transform: translateX(4px); }
+      }
+    `;
+    document.head.appendChild(shakeStyle);
+
+
+    // ===== Toast =====
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toast-icon');
+      const msgEl = document.getElementById('toast-msg');
+
+      toast.className = 'toast ' + type;
+      icon.className = type === 'success'
+        ? 'fa-solid fa-circle-check'
+        : 'fa-solid fa-circle-xmark';
+      msgEl.textContent = msg;
+
+      // Харуулах
+      requestAnimationFrame(() => {
+        toast.classList.add('show');
+      });
+
+      // 3 секундын дараа нуух
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+
+    // ===== Floating particles =====
+    (function createParticles() {
+      const container = document.getElementById('particles');
+      const count = 25;
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 3 + 1;
+        const x = Math.random() * 100;
+        const duration = Math.random() * 12 + 8;
+        const delay = Math.random() * 8;
+        const opacity = Math.random() * 0.3 + 0.1;
+
+        p.style.cssText = `
+          width: ${size}px;
+          height: ${size}px;
+          left: ${x}%;
+          bottom: -10px;
+          opacity: 0;
+          animation: particleRise ${duration}s ${delay}s ease-in infinite;
+        `;
+        // Зарим нь цэнхэр, зарим нь ногоон
+        if (Math.random() > 0.5) {
+          p.style.background = '#0077ff';
+        }
+        container.appendChild(p);
+      }
+
+      // Particle animation keyframes
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes particleRise {
+          0% { transform: translateY(0) translateX(0); opacity: 0; }
+          10% { opacity: 0.35; }
+          90% { opacity: 0.05; }
+          100% { transform: translateY(-100vh) translateX(${Math.random() > 0.5 ? '' : '-'}40px); opacity: 0; }
+        }
+      `;
+      document.head.appendChild(style);
+    })();
+
+
+    // ===== Mouse-г дагах subtle glow =====
+    document.addEventListener('mousemove', (e) => {
+      const x = e.clientX;
+      const y = e.clientY;
+      document.body.style.setProperty('--mx', x + 'px');
+      document.body.style.setProperty('--my', y + 'px');
+
+      // Blob-уудыг бага зэрэг хөдлүүлэх
+      const blobs = document.querySelectorAll('.bg-blob');
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      const dx = (x - cx) / cx;
+      const dy = (y - cy) / cy;
+
+      blobs[0].style.transform = `translate(${dx * 20}px, ${dy * 15}px)`;
+      blobs[1].style.transform = `translate(${dx * -15}px, ${dy * -10}px)`;
+    });
+
+
+    // ===== Keyboard accessibility: Enter дарахад =====
+    emailInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        pwInput.focus();
+      }
+    });
+  </script>
+</body>
+</html>
